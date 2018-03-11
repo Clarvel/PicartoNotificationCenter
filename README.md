@@ -1,3 +1,8 @@
+**Get the Picarto Client ID**:
+
+1. Visit `https://oauth.picarto.tv/clients`, create a client, and note the clientID.
+2. Open the `global.js` file and replace `“GET_YOUR_OWN_@_https://oauth.picarto.tv/clients”` with the clientID string you noted down in step 1.
+
 **Load the extension**:
 
 1. Visit `chrome://extensions` in your browser (or open up the Chrome menu by clicking the icon to the far right of the Omnibox:  The menu's icon is three horizontal bars. and select Extensions under the More Tools menu to get to the same place).
