@@ -11,6 +11,8 @@ If the extension is valid, it'll be loaded up and active right away! If it's inv
 
 Once the extension has loaded it should imediately direct you to the picarto Oauth2 sign in.
 
+**Inspecting the Output**:
+
 To inspect the javascript, go to `chrome://extensions` in your browser, navigate to the `Picarto Notifier` extension, and click on the link in `inspect views: background page`
 
 From this console you can call the function `oauth()` to try the oauth process again.
