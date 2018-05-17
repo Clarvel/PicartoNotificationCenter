@@ -22,14 +22,14 @@
 		"256":"icons/icon256.png"
 	},
 	"background":{
-		"scripts":["global.js"]
+		"scripts":["js/global.js"]
 	},
 	"content_scripts": [{
 		"matches":[
 			"http://picarto.tv/*",
 			"https://picarto.tv/*"
 		],
-		"js":["hidebar.js"],
+		"js":["js/hidebar.js"],
 		"run_at":"document_start"
 	}],
 	"browser_action":{
