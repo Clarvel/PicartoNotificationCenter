@@ -13,24 +13,23 @@ tell global.js to update when popup is opened
 */
 
 let picartoClientID = "fAIxSd5o2CkpTdMv"
-let picartoURL = "https://oauth.picarto.tv/authorize?redirect_uri=https://clarvel.github.io/PicartoNotificationCenter/&response_type=token&scope=readpub readpriv write&state=OAuth2Implicit&client_id="+picartoClientID
+let redirectURI = "https://clarvel.github.io/PicartoNotificationCenter/"
+
+let picartoURL = "https://oauth.picarto.tv/authorize?redirect_uri="+redirectURI+"&response_type=token&scope=readpub readpriv write&state=OAuth2Implicit&client_id="+picartoClientID
 let tokenRegex = RegExp("&access_token=(.+?)(?:&|$)")
-
 let picartoToken = ""
-
-let ding = new Audio('audio/ding.ogg')
+let liveCount = 0
+let inviteCount = 0
+let popupHTML = null
 let updater = undefined
-let notificationBlocker = undefined;
+let notificationBlocker = undefined
+let ding = new Audio('audio/ding.ogg')
 
 let streams = {}
 let multiData = {}
 let recordings = {}
 let messages = {}
 let userData = {}
-
-let liveCount = 0
-let inviteCount = 0
-let popupHTML = null
 
 
 // default settings, should be updated to saved settings. if changed, edit options.js too

@@ -1,24 +1,40 @@
-**Get the Picarto Client ID**:
+#Picarto Notification Center
+The Unofficial Notification Center for Picarto.tv
 
-1. Visit `https://oauth.picarto.tv/clients`, create a client, and note the clientID.
-2. Open the `global.js` file and replace `“GET_YOUR_OWN_@_https://oauth.picarto.tv/clients”` with the clientID string you noted down in step 1.
+This extension will:
+- track and sort your notifications
+- alert you when streamers you follow come online
+- Provide tools for streamers to control their Streaming Mode
+- Display MultiStream information and controls in an easy to use format
+- Collect saved Recordings into their own list
 
-**Load the extension**:
+This extension requires you to login and authorize it through Picarto.tv's OAuth2 system. It will NOT save username or password information.
 
-1. Visit `chrome://extensions` in your browser (or open up the Chrome menu by clicking the icon to the far right of the Omnibox:  The menu's icon is three horizontal bars. and select Extensions under the More Tools menu to get to the same place).
-2. Ensure that the Developer mode checkbox in the top right-hand corner is checked.
-3. Click Load unpacked extension… to pop up a file-selection dialog.
-4. Navigate to the directory in which your extension files live, and select it.
+##How to Setup for personal OAuth2:
+TODO
 
-Alternatively, you can drag and drop the directory where your extension files live onto `chrome://extensions` in your browser to load it.
 
-If the extension is valid, it'll be loaded up and active right away! If it's invalid, an error message will be displayed at the top of the page. Correct the error, and try again.
+##How to Setup for Publishing and OAuth2:
 
-Once the extension has loaded it should imediately direct you to the picarto Oauth2 sign in.
 
-**Inspecting the Output**:
+###Upload the Extension to Google Web Store without publishing:
 
-To inspect the javascript, go to `chrome://extensions` in your browser, navigate to the `Picarto Notifier` extension, and click on the link in `inspect views: background page`
+1. Compress the items in `build` to `.zip` format.
+2. Create a new listing [here](https://chrome.google.com/webstore/developer/dashboard) and upload the compressed extension.
+3. Click on `More info` for that extension and note down the `Item ID` and `Public Key`.
+4. In the `build/manifest.json` file, replace the `"key"` value with the `Public Key` from step 2. This ensures that the `Item ID` value never changes.
 
-From this console you can call the function `oauth()` to try the oauth process again.
 
+###Create the redirect Website:
+
+1. Create a blank GitHub website (or other TLS Certified Domain that you control), and note down the url.
+2. In the `build/js/global.js` file, replace the `redirectURI` value with the url from step 1.
+3. have the redirect website redirect to `https://GOOGLE_ITEM_ID.chromiumapp.org/picarto` but replace the `GOOGLE_ITEM_ID` with the `Item ID` noted in the first section. Make sure to include the incoming url's hash values, see `docs/index.html` for an example of how to do this.
+
+
+###Get the Picarto Client ID:
+
+1. Create a Picarto client for the extension [here](https://oauth.picarto.tv/clients), and note the `Client ID`.
+2. Add the url from the previous section to `Redirect URIs` for the Picarto Client.
+3. Open the `build/js/global.js` file and replace the `picartoClientID` with the `Client ID` from step 1.
+4. Finally, update the `version` in `build/manifest.json`, compress the items in `build` once more, and upload the updated compressed extension to the google dashboard.
