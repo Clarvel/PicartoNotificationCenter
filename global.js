@@ -14,7 +14,7 @@ tell global.js to update when popup is opened
 
 let picartoClientID = "fAIxSd5o2CkpTdMv"
 let picartoURL = "https://oauth.picarto.tv/authorize?redirect_uri=https://clarvel.github.io/PicartoNotificationCenter/&response_type=token&scope=readpub readpriv write&state=OAuth2Implicit&client_id="+picartoClientID
-let tokenRegex = RegExp("&access_token=(.+?)&")
+let tokenRegex = RegExp("&access_token=(.+?)(?:&|$)")
 
 let picartoToken = ""
 
