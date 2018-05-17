@@ -1,0 +1,68 @@
+<html>
+<head>
+	<title>Picarto Notifier Popup Window</title>
+	<link rel="stylesheet" type="text/css" href="css/picartofont.css">
+	<script src="popup.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/popup.css">
+</head>
+<body>
+	<div class="header" id="header"></div>
+	<div id="streamslist"></div>
+	<div id="dashboard" style="display:none;">
+		<span class="icon" title="Invite Streamer" id="invite" style="display:none;"></span>
+		<div id="premiumflags" style="display:none;">
+			<span class="icon" title="Private Mode" id="private"></span>
+			<span class="icon" title="Record Streams" id="recordings"></span>
+		</div>
+		<div id="streamflags">
+			<span class="icon" title="Toggle Gamemode" id="gaming"></span>
+			<span class="icon" title="Toggle NSFW" id="adult"></span>
+			<span class="icon" title="Toggle Commissions" id="commission"></span>
+		</div>
+	</div>
+	<div id="multilist"></div>
+	<div id="msgslist"></div>
+	<span class="icon" title="View Recordings" id="seerecordings" style="display:none;"></span>
+	<div class="modal" id="modal" style="opacity: 0;pointer-events: none;">
+		<div id="invitemodal" style="display:none;">
+			<div class="header">Send MultiStream Invite to:</div>
+			<div class="flexbar">
+				<input type="text" placeholder="Person to Invite" id="invitee">
+				<span class="icon" title="Close" id="invitebutton"></span>
+			</div>
+		</div>
+		<div id="recordingsmodal" style="display: none;">
+			<div class="header">Recordings</div>
+			<div id="recordingslist">
+				<div class="invite notification" data-id="Banderi">
+					<img class="avatar imgmsg" src="https://picarto.tv/user_data/usrimg/banderi/dsdefault.jpg">
+					<span class="message">Invite from Banderi</span>
+					<span class="icon" title="Accept">&#xe812;</span>
+					<span class="icon" title="Decline">&#xe813;</span>
+				</div>
+				<div class="notification" data-id="Cylable">
+					<img class="avatar" src="https://picarto.tv/user_data/usrimg/cylable/dsdefault.jpg">
+					<span class="message">Invited Cylable</span>
+					<span class="icon" title="Revoke Invite">&#xe813;</span>
+				</div>
+				<div class="notification" data-id="Banderi">
+					<img class="avatar" src="https://picarto.tv/user_data/usrimg/banderi/dsdefault.jpg">
+					<span class="message">Banderi is Hosting</span>
+					<span class="icon" title="Leave Session">&#xe813;</span>
+				</div>
+				<div class="notification" data-id="Cylable">
+					<img class="avatar" src="https://picarto.tv/user_data/usrimg/cylable/dsdefault.jpg">
+					<span class="message">Cylable has Joined</span>
+					<span class="icon" title="Kick from Session">&#xe813;</span>
+				</div>
+				<div class="notification" data-id="Err 502">
+					<span class="message" data-count="5">Err 502</span>
+					<span class="icon" title="Dismiss">&#xe813;</span>
+				</div>
+			</div>
+			<span class="icon markRead" title="Mark all as Read" id="markrecordsread"></span>
+		</div>
+		<span class="icon" title="Close" id="closemodal"></span>
+	</div>
+</body>
+</html>

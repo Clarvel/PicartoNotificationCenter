@@ -1,0 +1,7 @@
+body {
+	transition: all ease .3s;
+}
+.disabled{
+	opacity: 0.5;
+	pointer-events: none;
+}

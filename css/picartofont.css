@@ -1,0 +1,11 @@
+@font-face {
+	font-family: 'Picarto Symbols';
+	font-style: normal;
+	font-weight: 400;
+	src: url('../fonts/symbols.woff') format('woff');
+}
+.icon{
+	font-family: 'Picarto Symbols';
+	font-style: normal;
+	font-weight: normal;
+}
