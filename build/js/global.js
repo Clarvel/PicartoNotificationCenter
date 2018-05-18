@@ -16,7 +16,7 @@ let picartoClientID = "fAIxSd5o2CkpTdMv"
 let redirectURI = "https://clarvel.github.io/PicartoNotificationCenter/"
 
 let picartoURL = "https://oauth.picarto.tv/authorize?redirect_uri="+redirectURI+"&response_type=token&scope=readpub readpriv write&state=OAuth2Implicit&client_id="+picartoClientID
-let tokenRegex = RegExp("&access_token=(.+?)(?:&|$)")
+let tokenRegex = RegExp("[&#]access_token=(.+?)(?:&|$)")
 let picartoToken = ""
 let liveCount = 0
 let inviteCount = 0
