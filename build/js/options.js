@@ -75,6 +75,13 @@ function purge_options() {
 		}
 	})
 }
+function checkStreamerOnly(val){
+	if(val){
+		streameronlyElem.classList.remove("disabled")
+	}else{
+		streameronlyElem.classList.add("disabled")
+	}
+}
 
 window.onload = ()=>{
 	saveStatusElem = document.getElementById("status")
@@ -90,12 +97,7 @@ window.onload = ()=>{
 		}
 		set_elements(data)
 
-		elems["streamer"].addEventListener("click", (evt)=>{
-			if(evt.target.checked){
-				streameronlyElem.classList.remove("disabled")
-			}else{
-				streameronlyElem.classList.add("disabled")
-			}
-		})
+		elems["streamer"].addEventListener("click", (evt)=>{checkStreamerOnly(evt.target.checked)})
+		checkStreamerOnly(elems["streamer"].checked)
 	})
 }

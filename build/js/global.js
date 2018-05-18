@@ -287,7 +287,7 @@ function update(cb=undefined) {
 
 	get("https://api.picarto.tv/v1/user", (data)=>{
 		userData = data["channel_details"]
-		userData["premium"] = true // (userData["account_type"] == "premium") // TODO DEBUG
+		userData["premium"] = (userData["account_type"] == "premium")
 		userData["streaming"] = (settings["streamer"] || userData["online"])
 		userData["commission"] = userData["commissions"] // because typo?
 		
@@ -364,16 +364,16 @@ function CollectData(){
 
 settings = defaults // set settings initially to defaults
 updateSettings() // update settings with stored data and update functions
-//oauth(true)
 //chrome.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]})
-chrome.browserAction.setBadgeText({"text": "Login"})
-chrome.browserAction.setTitle({"title": "Login to Picarto"})
-chrome.browserAction.getPopup({}, (result)=>{ // remove popup so oauth completes
-	popupHTML = result
-	chrome.browserAction.setPopup({"popup":""})
-})
-chrome.browserAction.onClicked.addListener(()=>{oauth(true)}) // oauth resets the popup html
-
+if(picartoToken == ""){
+	chrome.browserAction.setBadgeText({"text": "Login"})
+	chrome.browserAction.setTitle({"title": "Login to Picarto"})
+	chrome.browserAction.getPopup({}, (result)=>{ // remove popup so oauth completes
+		popupHTML = result
+		chrome.browserAction.setPopup({"popup":""})
+	})
+	chrome.browserAction.onClicked.addListener(()=>{oauth(true)}) // oauth resets the popup html
+}
 
 // add listener to the desktop notification popups
 chrome.notifications.onClicked.addListener((notificationId)=>{
