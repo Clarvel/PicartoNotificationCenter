@@ -14,13 +14,13 @@ tell global.js to update when popup is opened
 
 let picartoClientID = "fAIxSd5o2CkpTdMv"
 let redirectURI = "https://clarvel.github.io/PicartoNotificationCenter/"
+let popupHTML = "chrome-extension://cmnfbkpodnopafgnlicpjjnpcgdlclde/popup.html"
 
 let picartoURL = "https://oauth.picarto.tv/authorize?redirect_uri="+redirectURI+"&response_type=token&scope=readpub readpriv write&state=OAuth2Implicit&client_id="+picartoClientID
 let tokenRegex = RegExp("[&#]access_token=(.+?)(?:&|$)")
 let picartoToken = ""
 let liveCount = 0
 let inviteCount = 0
-let popupHTML = null
 let updater = undefined
 let notificationBlocker = undefined
 let ding = new Audio('audio/ding.ogg')
@@ -368,10 +368,7 @@ updateSettings() // update settings with stored data and update functions
 if(picartoToken == ""){
 	chrome.browserAction.setBadgeText({"text": "Login"})
 	chrome.browserAction.setTitle({"title": "Login to Picarto"})
-	chrome.browserAction.getPopup({}, (result)=>{ // remove popup so oauth completes
-		popupHTML = result
-		chrome.browserAction.setPopup({"popup":""})
-	})
+	chrome.browserAction.setPopup({"popup":""})
 	chrome.browserAction.onClicked.addListener(()=>{oauth(true)}) // oauth resets the popup html
 }
 
