@@ -16,22 +16,6 @@ let picartoClientID = "fAIxSd5o2CkpTdMv"
 let redirectURI = "https://clarvel.github.io/PicartoNotificationCenter/"
 let popupHTML = "chrome-extension://cmnfbkpodnopafgnlicpjjnpcgdlclde/popup.html"
 
-let picartoURL = "https://oauth.picarto.tv/authorize?redirect_uri="+redirectURI+"&response_type=token&scope=readpub readpriv write&state=OAuth2Implicit&client_id="+picartoClientID
-let tokenRegex = RegExp("[&#]access_token=(.+?)(?:&|$)")
-let picartoToken = ""
-let liveCount = 0
-let inviteCount = 0
-let updater = undefined
-let notificationBlocker = undefined
-let ding = new Audio('audio/ding.ogg')
-
-let streams = {}
-let multiData = {}
-let recordings = {}
-let messages = {}
-let userData = {}
-
-
 // default settings, should be updated to saved settings. if changed, edit options.js too
 let defaults = {
 	"updateTime" : 600000,
@@ -46,6 +30,21 @@ let defaults = {
 	"delrecords" : false,
 	"updatemulti" : false
 }
+
+// Probably shouldn't mess with these variables
+let picartoURL = "https://oauth.picarto.tv/authorize?redirect_uri="+redirectURI+"&response_type=token&scope=readpub readpriv write&state=OAuth2Implicit&client_id="+picartoClientID
+let tokenRegex = RegExp("[&#]access_token=(.+?)(?:&|$)")
+let picartoToken = ""
+let liveCount = 0
+let inviteCount = 0
+let updater = undefined
+let notificationBlocker = undefined
+let ding = new Audio('audio/ding.ogg')
+let streams = {}
+let multiData = {}
+let recordings = {}
+let messages = {}
+let userData = {}
 let settings = {}
 
 function addMessage(msg){
@@ -287,7 +286,7 @@ function update(cb=undefined) {
 
 	get("https://api.picarto.tv/v1/user", (data)=>{
 		userData = data["channel_details"]
-		userData["premium"] = (userData["account_type"] == "premium")
+		userData["premium"] = (settings["premium"] || userData["account_type"] == "premium")
 		userData["streaming"] = (settings["streamer"] || userData["online"])
 		userData["commission"] = userData["commissions"] // because typo?
 		
@@ -314,7 +313,7 @@ function _toggleFlag(apiurl, key, cb){
 function clearOldUpdater(){
 	if(updater){clearInterval(updater)}
 }
-function forceUpdate(cb=undefined){
+function forceUpdate(cb=undefined){ // forces update to happen and resets the update interval
 	clearOldUpdater()
 	updater = setInterval(update, settings["updateTime"])
 	update(cb)
@@ -359,7 +358,7 @@ function oauth(interactive = false){
 }
 
 function CollectData(){
-	return {"streams":streams, "multidata":multiData, "userdata":userData, "messages":messages, "recordings":recordings,"settings":settings}
+	return {"streams":streams, "multidata":multiData, "userdata":userData, "messages":messages, "recordings":(settings["records"]?recordings:null),"settings":settings}
 }
 
 settings = defaults // set settings initially to defaults
@@ -500,8 +499,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 	return false;
 });
 
+/*chrome.webRequest.onBeforeRequest.addListener(
+	()=>{return {"cancel":true}},
+	{"urls":["https://picarto.tv/js/realtime_notifications.min.js", "debugger:///VM8980"]},
+	["blocking"]
+)*/
 
 document.addEventListener("online", ()=>{forceUpdate();})
 document.addEventListener("offline", ()=>{clearOldUpdater();})
-window.addEventListener("error", (e)=>{console.log(e);addMessage(e);})
+window.addEventListener("error", (e)=>{addMessage(e);})
 

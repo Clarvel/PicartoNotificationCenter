@@ -8,7 +8,7 @@
 		"storage",
 		"notifications",
 		"identity",
-		"https://api.picarto.tv/v1/user/notifications"
+		"https://*.picarto.tv/*"
 	],
 	"description": "An Unofficial Notification Center for Picarto",
 	"options_ui": {

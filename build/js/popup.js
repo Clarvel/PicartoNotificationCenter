@@ -1,81 +1,105 @@
-let _div = document.createElement("div")
-function sanitize(text){
-	_div.textContent = text
-	return _div.textContent
-}
+/**/
 
-function createNotificationHTML (name, unread=true, canInvite=false) {
-	return `<div data-id=`+name+` class="notification livestream`+
-	(unread?``:` read`)+
-	`"><img class="avatar" src="https://picarto.tv/user_data/usrimg/`+
-	name.toLowerCase()+
-	`/dsdefault.jpg"><span class="message">`+
-	name+
-	`</span>`+
-	(canInvite?`<span class="icon" title="Invite to MultiStream">&#xe814;</span>`:``)+
-	`<span class="icon markRead" title="Mark as Read"></span></div>`
-}
-
-function createInviteHTML(name, type){
-	let text = ``
-	let title = ``
-	switch (type) {
-		case "invite":
-			text = `Invite from `+name+`</span><span class="icon" title="Accept">&#xe812;`
-			title = `Decline`
-			break
-		case "attend":
-			text = `Streaming with `+name
-			title = `Leave Session`
-			break
-		case "send":
-			text = `Invited `+name
-			title = `Revoke Invite`
-			break
-		case "hosting":
-			text = name + ` Accepted`
-			title = `Remove from Session`
-			break
-		default:
-			throw new Exception("Invite function received unexpected type: "+type)
+function createNotificationHTML(data) {
+	let html = ""
+	let startID = counterID = 0
+	for(let a in data){
+		html += `<div class="notification livestream`+(data[a]["unread"]?``:` read`)+`" id="n`+counterID++ +
+		`"><img class="avatar" id="n`+counterID++ +`"><span class="message" id="n`+counterID++ +
+		`"></span><span class="icon invitebutton" title="Invite to MultiStream"></span><span class="icon markRead" title="Mark as Read"></span></div>`
 	}
-	return `<div class="invite notification" data-name="`+name+
-		`"><img class="avatar" src="https://picarto.tv/user_data/usrimg/`+
-		name.toLowerCase()+`/dsdefault.jpg"><span class="message">`+text+
-		`</span><span class="icon markRead" title="`+title+`"></span></div>`
+	streamsElem.innerHTML = html
+	for(let a in data){
+		document.getElementById("n"+startID++).dataset.id = a
+		document.getElementById("n"+startID++).src = "https://picarto.tv/user_data/usrimg/"+a.toLowerCase()+"/dsdefault.jpg"
+		document.getElementById("n"+startID++).textContent = a
+	}
+}
+
+function createInviteHTML(data){
+	let html = ""
+	let startID = countID = 0
+	for(let a in data["incoming"]){
+		html += `<div class="invite notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
+		`"><span class="message" id="i`+countID++ +
+		`"></span><span class="icon accept" title="Accept"></span><span class="icon dismiss" title="Decline"></span></div>`
+	}
+	for(let a in data["outgoing"]){
+		html += `<div class="outgoing notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
+		`"><span class="message" id="i`+countID++ +
+		`"></span><span class="icon dismiss" title="Revoke Invite"></span></div>`
+	}
+	if(data["session"]["host"]["name"] != ""){
+		html += `<div class="host notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
+			`"><span class="message" id="i`+countID++ +
+			`"></span><span class="icon dismiss" title="Lease Session"></span></div>`
+	}
+	for(let a in data["session"]["guests"]){
+		html += `<div class="guest notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
+		`"><span class="message" id="i`+countID++ +
+		`"></span><span class="icon dismiss" title="Kick from Session"></span></div>`
+	}
+	invitesElem.innerHTML = html
+	for(let a in data["incoming"]){
+		let name = data["incoming"][a]["name"]
+		document.getElementById("i"+startID++).dataset.id = name
+		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
+		document.getElementById("i"+startID++).textContent = "Invite from " + name
+	}
+	for(let a in data["outgoing"]){
+		let name = data["outgoing"][a]["name"]
+		document.getElementById("i"+startID++).dataset.id = name
+		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
+		document.getElementById("i"+startID++).textContent = "Invited " + name
+	}
+	if(data["session"]["host"]["name"] != ""){
+		let name = data["session"]["host"]["name"]
+		document.getElementById("i"+startID++).dataset.id = name
+		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
+		document.getElementById("i"+startID++).textContent = name + " is Hosting"
+	}
+	for(let a in data["session"]["guests"]){
+		let name = data["session"]["guests"][a]["name"]
+		document.getElementById("i"+startID++).dataset.id = name
+		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
+		document.getElementById("i"+startID++).textContent = name + " has Joined"
+	}
 } 
 
-function createMsgHTML(data){//  text, count){
+function createMsgHTML(data){
 	let html = ""
-	let id = 0
-	for(let text in data){
-		let count = data[text]
-		html += `<div class="notification"><span class="message"`+(count>0?` data-count=`+count:'')+
-		` id="`+text+ // TODO test 'text' script injection?
+	let startID = countID = 0
+	for(let a in data){
+		html += `<div class="notification"><span class="message" id="m`+countID++ +
 		`"></span><span class="icon dismiss" title="Dismiss"></span></div>`
 	}
 	msgBoxElem.innerHTML = html
 	for(let a in data){
-		document.getElementById(a).textContent = a
+		let count = data[a]
+		let elem = document.getElementById("m"+startID++)
+		elem.textContent = a
+		if(count > 0){
+			elem.dataset.count = count
+		}
 	}
 }
 
 function recordingsHTML(data){
 	let html = ""
-	let startID = counterID = 0
+	let startID = countID = 0
 	let unreadCount = 0
 	for(let a in data){
-		let note = data[a]
-		let unread = note["unread"]
-		html = `<div class="notification livestream`+(unread?``:` read`)+`" data-id="`+
-		a+`"><img class="avatar" src="https://picarto.tv/user_data/usrimg/`+
-		note["channel"].toLowerCase()+`/dsdefault.jpg"><span class="message" id="r`+ counterID++ +`"></span>`+
-		`<span class="icon markRead" title="Mark as Read"></span></div>`+html
+		let unread = data[a]["unread"]
+		html = `<div class="notification livestream`+(unread?``:` read`)+`" id="r`+
+		countID++ +`"><img class="avatar" id="r`+countID++ +`"><span class="message" id="r`+ countID++ +`"></span>`+
+		`<span class="icon markRead" title="Mark as Read"></span></div>`+html // load html invertedly to sort by most recent
 
 		if(unread){unreadCount+=1;}
 	}
 	recordingsElem.innerHTML = html
 	for(let a in data){
+		document.getElementById('r'+startID++).dataset.id = a
+		document.getElementById("r"+startID++).src = "https://picarto.tv/user_data/usrimg/"+data[a]["channel"].toLowerCase()+"/dsdefault.jpg"
 		document.getElementById('r'+startID++).textContent = data[a]["channel"]+" - "+ new Date(data[a]["timestamp"]).toString()
 	}
 	return unreadCount;
@@ -85,9 +109,26 @@ function recordingsHTML(data){
 function update(){
 	chrome.runtime.sendMessage({"msg":"getUpdate"}, (data)=>{
 		console.log(data)
-
+		// load header
 		let numLive = Object.keys(data["streams"]).length
 		headerElem.textContent = numLive+' Pe'+(numLive==1?"rson":"ople") + " Streaming"+(numLive>0?':':'')
+		// load streams
+		createNotificationHTML(data["streams"])
+		// load invites
+		createInviteHTML(data["multidata"])
+		// load messages
+		createMsgHTML(data["messages"])
+		// load recordings
+		if(data["recordings"] != null){
+			recordingElem.style.removeProperty("display")
+			let recordingsCount = recordingsHTML(data["recordings"]) // also makes the html
+			if(recordingsCount > 0){
+				recordingElem.dataset.count = recordingsCount
+			}else{
+				delete recordingElem.dataset.count
+			}
+		}
+		// load dashboard
 		let streaming = data["userdata"]["streaming"]
 		if(streaming){// set buttons
 			dashboardElem.style.removeProperty("display") // display it
@@ -101,44 +142,20 @@ function update(){
 			}
 		}
 		streaming = streaming && data["userdata"]["premium"] // set canInvite
-		if(streaming){
-			inviteButtonElem.style.removeProperty("display")
-		}
-
-		// load streams
-		let html = ""
-		for(let a in data["streams"]){
-			html += createNotificationHTML(a, data["streams"][a]["unread"], streaming)
-		}
-		streamsElem.innerHTML = html
-		// load invites
-		html = ""
-		for(let a in data["multidata"]["incoming"]){
-			html += createInviteHTML(a)
-		}
-		invitesElem.innerHTML = html
-		// load messages
-		createMsgHTML(data["messages"])
-		
-		if(Object.keys(data["recordings"]).length > 0){
-			recordingElem.style.removeProperty("display")
-			let recordingsCount = recordingsHTML(data["recordings"]) // also makes the html
-			if(recordingsCount > 0){
-				recordingElem.dataset.count = recordingsCount
-			}else{
-				delete recordingElem.dataset.count
+		if(!streaming){
+			let elems = document.getElementsByClassName("invitebutton")
+			for(let a=elems.length-1;a>=0;a-=1){
+				elems[a].classList.add("hidden")
 			}
-		}else{
-			//recordingElem.remove()
 		}
 	})
 }
 // because I'm lazy and don't want to manually set all these
 function onFocus(elem){
 	if(elem.title == "Accept"){
-		elem.parentElement.classList.toggle("accept");
+		elem.parentElement.classList.toggle("colorizeAccept");
 	}else if(elem.title == "Decline"){
-		elem.parentElement.classList.toggle("decline");
+		elem.parentElement.classList.toggle("colorizeDecline");
 	}else if(elem.title == "Mark as Read" || elem.title == "Dismiss"){
 		elem.parentElement.classList.toggle("mark");
 	}
@@ -201,34 +218,38 @@ function onClick(elem){
 }
 
 function clickInStreamsElem(elem, parent){
-	if(elem.title == "Invite to MultiStream"){
+	if(elem.classList.contains("invitebutton")){
 		sendNamedInvite(parent.dataset.id)
 		// TODO pending status?
-		return;
-	}
-	if(elem.title != "Mark as Read"){
+	}else if(elem.classList.contains("markRead")){
+		chrome.runtime.sendMessage({"msg":"markStreamRead", "data":parent.dataset.id})
+		parent.classList.add("read");
+		elem.classList.add("hidden")
+	}else{
+		// this auto-closes the popup so I don't need to mark it as read here - it will update on next open
 		chrome.runtime.sendMessage({"msg":"viewStream", "data":parent.dataset.id})
 	}
-	chrome.runtime.sendMessage({"msg":"markStreamRead", "data":parent.dataset.id})
-	parent.classList.add("read");
-	parent.lastChild.classList.add("hidden")
+	
 }
 
 function clickInRecordingsElem(elem, parent){
-	if(elem.title != "Mark as Read"){
-		//chrome.runtime.sendMessage({"msg":"viewRecording", "data":parent.dataset.id})
-	}
-	chrome.runtime.sendMessage({"msg":"markRecordingRead", "data":parent.dataset.id})
-	if(!parent.classList.contains("read") && recordingElem.dataset.count){
-		let val = recordingElem.dataset.count - 1
-		if(val > 0){
-			recordingElem.dataset.count = val
-		}else{
-			delete recordingElem.dataset.count
+	if(elem.title == "Mark as Read"){
+		chrome.runtime.sendMessage({"msg":"markRecordingRead", "data":parent.dataset.id})
+		if(!parent.classList.contains("read") && recordingElem.dataset.count){
+			let val = recordingElem.dataset.count - 1
+			if(val > 0){
+				recordingElem.dataset.count = val
+			}else{
+				delete recordingElem.dataset.count
+			}
 		}
+		parent.classList.add("read");
+		elem.classList.add("hidden")
+	}else{
+		// this auto-closes the popup so I don't need to mark it as read here - it will update on next open
+		chrome.runtime.sendMessage({"msg":"viewRecording", "data":parent.dataset.id})
 	}
-	parent.classList.add("read");
-	parent.lastChild.classList.add("hidden")
+	
 }
 
 function sendNamedInvite(name){

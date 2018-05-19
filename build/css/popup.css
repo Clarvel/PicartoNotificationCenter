@@ -15,16 +15,13 @@
 	box-sizing: border-box;
 	color: var(--textColor);
 	font-family: Arial,sans-serif;
+	transition: all 0.3s;
 }
 body {
 	width: var(--bodyWidth);
 	padding: var(--bodyPadding);
 	margin: 0px;
 	background-color: var(--backgroundColor);
-}
-/* general animation for colors and opacity */
-*/*:not(body)*/{
-	transition: all 0.3s;
 }
 .header {
 	text-align: center;
@@ -57,10 +54,10 @@ body>div:not(:first-child):empty{ /*if empty don't display*/
 .invite, .notification:hover, input{
 	background-color: var(--interactColor);
 }
-.accept:hover{
+.colorizeAccept:hover{
 	background-color: var(--acceptColor);
 }
-.decline:hover{
+.colorizeDecline:hover{
 	background-color: var(--rejectColor);
 }
 .avatar, .icon, .message{
@@ -177,8 +174,6 @@ button:disabled{
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.5);
-	/*opacity: 0;
-	pointer-events: none;*/
 }
 .flexbar{
 	display: flex;
@@ -186,7 +181,6 @@ button:disabled{
 #invitemodal{
 	background-color: var(--backgroundColor);
 	padding: var(--bodyPadding);
-	/*bottom: 0px;*/
 	width: 100%;
 	position: absolute;
 }
@@ -206,13 +200,7 @@ button:disabled{
 }
 #recordingslist{
 	overflow-y: scroll;
-	max-height: calc(100% - 1.2em - 13px - 5px - 5px - 2 * var(--bodyPadding)); /* sigh */
-}
-.imgmsg{
-	content: "";
-}
-.imgmsg::after{
-	content: "test";
+	max-height: calc(100% - 1.2em - 13px - 2 * calc(5px + var(--bodyPadding))); /* sigh. this is required to properly scroll */
 }
 @keyframes rotate {
 	from{
@@ -249,14 +237,8 @@ button:disabled{
 #commission::before{
 	content: '\e88e';
 }
-#invitebutton::before{
+.invitebutton::before{
 	content: '\e87b';
-}
-#cancelbutton::before{
-	content: '\e813';
-}
-#closemodal::before{
-	content: '\e813';
 }
 #trashbutton::before{
 	content: '\e83b';
@@ -266,5 +248,8 @@ button:disabled{
 }
 .dismiss::before{
 	content: '\e813';
+}
+.accept::before{
+	content: '\e812';
 }
 
