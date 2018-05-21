@@ -1,16 +1,18 @@
 /*
 Stuff To Do:
 
-collect multistream data and pass to popup, display multistream data in popup
+- collect multistream data and pass to popup, display multistream data in popup
 - collect recordings data and pass to popup, display recordings data in popup
 figure out how private mode works, do I need to show the secret url?
-change the invite streamer icon
+- change the invite streamer icon
 fix the font to be only needed icons
 - maybe move recordings button to bar?
 tell global.js to update when popup is opened
 - create and hook up invite modal to accept streamer name
-
+verify all button functionality before making public
 */
+if(chrome){browser = chrome}
+
 
 let picartoClientID = "fAIxSd5o2CkpTdMv"
 let redirectURI = "https://clarvel.github.io/PicartoNotificationCenter/"
@@ -54,11 +56,11 @@ function addMessage(msg){
 	}else{
 		messages[msg] = 0;
 	}
-	chrome.runtime.sendMessage({"msg":"addMessage","data":[msg, messages[msg]]})
+	browser.runtime.sendMessage({"msg":"addMessage","data":[msg, messages[msg]]})
 	if (settings["alert"] == true) {
 		ding.play()
 	}
-	chrome.browserAction.setBadgeBackgroundColor({"color":"#b53f30"})
+	browser.browserAction.setBadgeBackgroundColor({"color":"#b53f30"})
 }
 
 function _request(url_, type, data={}, success=()=>{}, error=addMessage){
@@ -110,13 +112,13 @@ function post(url_, data=undefined, success=undefined, error=undefined){
 function createNotification(title, message, channel, id=channel){
 	if(settings["notifications"]){
 		console.log("Creating notification for " + id)
-		chrome.notifications.clear(id, ()=>{})
-		chrome.notifications.create(id, {
+		browser.notifications.clear(id, ()=>{})
+		browser.notifications.create(id, {
 			type: "basic",
 			iconUrl: "https://picarto.tv/user_data/usrimg/"+channel.toLowerCase()+"/dsdefault.jpg",
 			title: title,
 			message: message
-		}, (id) => {return id;}); // callback required for chrome < 42
+		}, (id) => {return id;}); // callback required for browser < 42
 	}
 }
 
@@ -145,8 +147,8 @@ function updateBadge(){
 		badgetext += a
 		badgetooltip += a+" invite"+(inviteCount>1?"s":"")
 	}
-	chrome.browserAction.setBadgeText({"text": badgetext})
-	chrome.browserAction.setTitle({"title": badgetooltip})
+	browser.browserAction.setBadgeText({"text": badgetext})
+	browser.browserAction.setTitle({"title": badgetooltip})
 }
 
 function markRead(note){
@@ -156,7 +158,6 @@ function markRead(note){
 
 function delNotification(uuid){
 	if(settings["curate"]){
-		console.log("Deleting "+uuid)
 		post("https://api.picarto.tv/v1/user/notifications/"+uuid+"/delete")
 	}else{
 		post("https://api.picarto.tv/v1/user/notifications/"+uuid+"/read")
@@ -229,12 +230,14 @@ function update(cb=undefined) {
 			switch(note["type"]){
 				case "multiInvite": // ignore these in favor of API
 				case "multiRemove": // ignore these in favor of API
+					//delNotification(note["uuid"])
 					break;
 				case "follow":
 					if(note["unread"]){
 						createNotification(name, "has followed you!", name, " F"+name)
+						addMessage(name + " has followed you!")
 					}
-					delNotification(streams[name]["uuid"])
+					delNotification(note["uuid"])
 					break;
 				case "live":
 					note["online"] = false // stream is offline until proven otherwise, in testOnline
@@ -320,31 +323,32 @@ function forceUpdate(cb=undefined){ // forces update to happen and resets the up
 }
 // called when settings update
 function updateSettings(){
-	chrome.storage.local.get(settings, (data)=>{
+	browser.storage.local.get(settings, (data)=>{
 		// set from saved data
 		settings = data
 		
 		// hide Picarto official notification bar
 		if(settings["picartobar"]){
 			console.log("Hiding official Picarto bar");
-			notificationBlocker = chrome.webRequest.onBeforeRequest.addListener(() => {
+			notificationBlocker = browser.webRequest.onBeforeRequest.addListener(() => {
 				return {cancel: true};},{
 				"urls" : ["*://*.picarto.tv/js/realtime_notifications.min.js"],
 				"types" : ["script"]},["blocking"]
 			)
 		}else if(notificationBlocker != undefined){
-			chrome.webRequest.onBeforeRequest.removeListener(notificationBlocker)
+			browser.webRequest.onBeforeRequest.removeListener(notificationBlocker)
 		}
 	})
 }
 
 function oauth(interactive = false){
-	chrome.identity.launchWebAuthFlow({'url': picartoURL,'interactive': interactive}, (redirect_url) => {
+	browser.identity.launchWebAuthFlow({'url': picartoURL,'interactive': interactive}, (redirect_url) => {
 		let parsed = tokenRegex.exec(redirect_url)
 		if(parsed){
 			picartoToken = "Bearer " + parsed[1]
-			chrome.browserAction.setPopup({"popup":popupHTML})
-			chrome.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]})
+			browser.browserAction.setPopup({"popup":popupHTML})
+			console.log("test")
+			browser.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]})
 			forceUpdate()
 		}else{ // fail state
 			picartoToken = ""
@@ -352,8 +356,8 @@ function oauth(interactive = false){
 			console.log(redirect_url)
 			console.log(parsed)
 			console.groupEnd()
-
 		}
+		ding.play()
 	})
 }
 
@@ -363,16 +367,18 @@ function CollectData(){
 
 settings = defaults // set settings initially to defaults
 updateSettings() // update settings with stored data and update functions
-//chrome.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]})
+//browser.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]})
 if(picartoToken == ""){
-	chrome.browserAction.setBadgeText({"text": "Login"})
-	chrome.browserAction.setTitle({"title": "Login to Picarto"})
-	chrome.browserAction.setPopup({"popup":""})
-	chrome.browserAction.onClicked.addListener(()=>{oauth(true)}) // oauth resets the popup html
+	ding.play()
+	browser.browserAction.setBadgeText({"text": "Login"})
+	browser.browserAction.setTitle({"title": "Login to Picarto"})
+	browser.browserAction.getPopup({}, (link)=>{console.log(link)})
+	browser.browserAction.setPopup({"popup":""})
+	browser.browserAction.onClicked.addListener(()=>{oauth(true)}) // oauth resets the popup html
 }
 
 // add listener to the desktop notification popups
-chrome.notifications.onClicked.addListener((notificationId)=>{
+browser.notifications.onClicked.addListener((notificationId)=>{
 	if(notificationId.charAt(0) == ' '){
 		if(notificationId.charAt(1) == 'I'){
 			post("https://api.picarto.tv/v1/user/multistream/accept", notificationId.slice(2))
@@ -388,11 +394,11 @@ chrome.notifications.onClicked.addListener((notificationId)=>{
 			updateBadge()
 		}
 	}
-	chrome.notifications.clear(notificationId, ()=>{});
+	browser.notifications.clear(notificationId, ()=>{});
 });
 
 // listen for messages from other pages
-chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
+browser.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 	switch (request["msg"]) {
 		case "settingsUpdated":
 			updateSettings()
@@ -410,7 +416,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 			return true
 		case "forceUpdate":
 			forceUpdate(()=>{
-				chrome.runtime.sendMessage({
+				browser.runtime.sendMessage({
 					"msg":"update",
 					"data":CollectData()
 				})
@@ -418,6 +424,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 			break
 		case "markStreamRead": // does not require popup update
 			markRead(streams[request["data"]])
+			liveCount -= 1
 			updateBadge()
 			break
 		case "viewStream":
@@ -446,28 +453,30 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 		case "deleteMessage": // does not require popup update
 			delete messages[request["data"]]
 			if(Object.keys(messages).length <= 0){
-				chrome.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]})
+				browser.browserAction.setBadgeBackgroundColor({"color":[0,0,0,0]})
 			}
 			break
 		case "toggleStreamFlag":
 			let sKey = request["data"]
 			_toggleFlag("https://api.picarto.tv/v1/user/streamflags/"+sKey, sKey, (data)=>{
-				chrome.runtime.sendMessage({"msg":"setStreamFlag","data":data})
+				browser.runtime.sendMessage({"msg":"setStreamFlag","data":data})
 			})
 			break
 		case "togglePremiumFlag":
 			let pKey = request["data"]
 			_toggleFlag("https://api.picarto.tv/v1/user/"+pKey+"/state", pKey, (data)=>{
-				chrome.runtime.sendMessage({"msg":"setPremiumFlag","data":data})
+				browser.runtime.sendMessage({"msg":"setPremiumFlag","data":data})
 			})		
 			break
 		case "declineInvite":
 			post("https://api.picarto.tv/v1/user/multistream/decline", {"channel_id":request["data"]})
+			inviteCount-=1
 			updateBadge()
 			break
 		case "acceptInvite":
 			post("https://api.picarto.tv/v1/user/multistream/accept", {"channel_id":request["data"]})
-			// TODO?
+			inviteCount-=1
+			updateBadge()
 			break
 		case "inviteNameToMulti":
 			if(request["data"] == ""){
@@ -477,7 +486,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 			get("https://api.picarto.tv/v1/channel/name/"+request["data"], (data)=>{
 				post("https://api.picarto.tv/v1/user/multistream/invite", {"channel_id":data["user_id"]}, (data1)=>{
 					// TODO success?
-					console.log(data1)
 				})
 			})
 			break
@@ -499,7 +507,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 	return false;
 });
 
-/*chrome.webRequest.onBeforeRequest.addListener(
+/*browser.webRequest.onBeforeRequest.addListener(
 	()=>{return {"cancel":true}},
 	{"urls":["https://picarto.tv/js/realtime_notifications.min.js", "debugger:///VM8980"]},
 	["blocking"]

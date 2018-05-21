@@ -2,6 +2,7 @@
 javascript for options page. settings defaults are actually stored in global.js
 this just handles the options.html interface with the local storage
 */
+if(chrome){browser = chrome}
 
 let messageTimer = 3000
 
@@ -20,13 +21,13 @@ function set_message (elem, text) {
 // edits the data packet with 'message' so you may need to make a copy before
 // calling this
 function send_update () {
-	chrome.runtime.sendMessage({"msg":"settingsUpdated"});
+	browser.runtime.sendMessage({"msg":"settingsUpdated"});
 }
 // returns true if no errors on accessing storage
 // otherwise returns false
 // also sets temporary status message
 function test_no_storage_err(statusElem, successMsg){
-	let err = chrome.runtime.lastError
+	let err = browser.runtime.lastError
 	if(err){
 		set_message(statusElem, err)
 		return false;
@@ -58,7 +59,7 @@ function save_options() {
 			settings[a] = elem.value
 		}
 	}
-	chrome.storage.local.set(settings, () => {
+	browser.storage.local.set(settings, () => {
 		if(test_no_storage_err(saveStatusElem, "Options saved.")){
 			send_update()
 		}
@@ -66,9 +67,9 @@ function save_options() {
 }
 
 function purge_options() {
-	chrome.storage.local.clear(() => {
+	browser.storage.local.clear(() => {
 		if(test_no_storage_err(purgeStatusElem, "Settings storage cleared!")){
-			chrome.runtime.sendMessage({"msg":"getDefaults"}, (data)=>{
+			browser.runtime.sendMessage({"msg":"getDefaults"}, (data)=>{
 				set_elements(data)
 				send_update()
 			})
@@ -91,7 +92,7 @@ window.onload = ()=>{
 	document.getElementById("save").addEventListener('click', save_options)
 	document.getElementById("purge").addEventListener('click', purge_options)
 
-	chrome.runtime.sendMessage({"msg":"getSettings"}, (data)=>{
+	browser.runtime.sendMessage({"msg":"getSettings"}, (data)=>{
 		for(let a in data){
 			elems[a] = document.getElementById(a)
 		}

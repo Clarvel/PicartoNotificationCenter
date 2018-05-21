@@ -1,4 +1,4 @@
-/**/
+if(chrome){browser = chrome}
 
 function createNotificationHTML(data) {
 	let html = ""
@@ -15,73 +15,78 @@ function createNotificationHTML(data) {
 		document.getElementById("n"+startID++).textContent = a
 	}
 }
-
+let inviteData = [
+	{
+		"class":"guest", 
+		"buttons":`<span class="icon dismiss" title="Kick from Session"></span>`,
+		"text": "%s has Joined"
+	},{
+		"class":"host", 
+		"buttons":`<span class="icon dismiss" title="Lease Session"></span></span>`,
+		"text": "%s is Hosting"
+	},{
+		"class":"outgoing", 
+		"buttons":`<span class="icon dismiss" title="Revoke Invite"></span>`,
+		"text": "Invited %s"
+	},{
+		"class":"invite", 
+		"buttons":`<span class="icon accept" title="Accept"></span><span class="icon dismiss" title="Decline"></span>`,
+		"text": "Invite from %s"
+	}
+]
 function createInviteHTML(data){
+	if(data == null || Object.keys(data).length == 0){return}
+	console.log(data)
 	let html = ""
 	let startID = countID = 0
-	for(let a in data["incoming"]){
-		html += `<div class="invite notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
-		`"><span class="message" id="i`+countID++ +
-		`"></span><span class="icon accept" title="Accept"></span><span class="icon dismiss" title="Decline"></span></div>`
-	}
-	for(let a in data["outgoing"]){
-		html += `<div class="outgoing notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
-		`"><span class="message" id="i`+countID++ +
-		`"></span><span class="icon dismiss" title="Revoke Invite"></span></div>`
-	}
-	if(data["session"]["host"]["name"] != ""){
-		html += `<div class="host notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
-			`"><span class="message" id="i`+countID++ +
-			`"></span><span class="icon dismiss" title="Lease Session"></span></div>`
-	}
-	for(let a in data["session"]["guests"]){
-		html += `<div class="guest notification" id="i`+countID++ +`"><img class="avatar" id="i`+countID++ +
-		`"><span class="message" id="i`+countID++ +
-		`"></span><span class="icon dismiss" title="Kick from Session"></span></div>`
+	let host = data["session"]["host"]
+	let datas = [data["session"]["guests"],host["name"]==""?[]:[host],data["outgoing"],data["incoming"]]
+	for(let a=datas.length-1;a>=0;a--){
+		let id = inviteData[a]
+		for(let b=datas[a].length-1;b>=0;b--){
+			html += `<div class="`+id["class"]+` notification" id="i`+
+			countID++ +`"><img class="avatar" id="i`+countID++ +
+			`"><span class="message" id="i`+countID++ +`"></span>`+
+			id["buttons"]+`</div>`
+		}
 	}
 	invitesElem.innerHTML = html
-	for(let a in data["incoming"]){
-		let name = data["incoming"][a]["name"]
-		document.getElementById("i"+startID++).dataset.id = name
-		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
-		document.getElementById("i"+startID++).textContent = "Invite from " + name
+	for(let a=datas.length-1;a>=0;a--){
+		let id = inviteData[a]
+		for(let b=datas[a].length-1;b>=0;b--){
+			let name = datas[a][b]["name"]
+			document.getElementById("i"+startID++).dataset.id = name
+			document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
+			document.getElementById("i"+startID++).textContent = id["text"].replace("%s", name)
+		}
 	}
-	for(let a in data["outgoing"]){
-		let name = data["outgoing"][a]["name"]
-		document.getElementById("i"+startID++).dataset.id = name
-		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
-		document.getElementById("i"+startID++).textContent = "Invited " + name
-	}
-	if(data["session"]["host"]["name"] != ""){
-		let name = data["session"]["host"]["name"]
-		document.getElementById("i"+startID++).dataset.id = name
-		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
-		document.getElementById("i"+startID++).textContent = name + " is Hosting"
-	}
-	for(let a in data["session"]["guests"]){
-		let name = data["session"]["guests"][a]["name"]
-		document.getElementById("i"+startID++).dataset.id = name
-		document.getElementById("i"+startID++).src = "https://picarto.tv/user_data/usrimg/"+name.toLowerCase()+"/dsdefault.jpg"
-		document.getElementById("i"+startID++).textContent = name + " has Joined"
-	}
-} 
+}
 
 function createMsgHTML(data){
 	let html = ""
 	let startID = countID = 0
 	for(let a in data){
-		html += `<div class="notification"><span class="message" id="m`+countID++ +
+		html += `<div class="notification" id="m`+countID++ +`"><span class="message" id="m`+countID++ +
 		`"></span><span class="icon dismiss" title="Dismiss"></span></div>`
 	}
 	msgBoxElem.innerHTML = html
 	for(let a in data){
 		let count = data[a]
+		document.getElementById("m"+startID++).dataset.id = a
 		let elem = document.getElementById("m"+startID++)
 		elem.textContent = a
+		elem.id = a
 		if(count > 0){
 			elem.dataset.count = count
 		}
 	}
+}
+function addMsgHTML(text){
+	msgBoxElem.innerHTML += `<div class="notification"><span class="message" id="am1"></span><span class="icon dismiss" title="Dismiss"></span></div>`
+	let elem = document.getElementById("am1")
+	elem.textContent = text
+	elem.id = text
+	elem.parentElement.dataset.id = text
 }
 
 function recordingsHTML(data){
@@ -107,7 +112,7 @@ function recordingsHTML(data){
 
 
 function update(){
-	chrome.runtime.sendMessage({"msg":"getUpdate"}, (data)=>{
+	browser.runtime.sendMessage({"msg":"getUpdate"}, (data)=>{
 		console.log(data)
 		// load header
 		let numLive = Object.keys(data["streams"]).length
@@ -160,55 +165,56 @@ function onFocus(elem){
 		elem.parentElement.classList.toggle("mark");
 	}
 }
-// because I'm lazy and don't want to manually set all these
+
+function openModal(modalID){
+	modalElem.style.opacity = 1
+	modalElem.style.removeProperty("pointer-events")
+	modalElems[modalID].style.display = ""
+}
+function closeModal(){
+	modalElem.style.opacity = 0
+	modalElem.style.pointerEvents = "none"
+	for(let a in modalElems){
+		modalElems[a].style.display = "none"
+	}
+}
 function onClick(elem){
-	if(elem.title == "Accept"){// accept multi invite
-		chrome.runtime.sendMessage({"msg":"acceptInvite", "data":elem.parentElement.dataset.name})
-		// TODO what to do wth the element
-	}else if(elem.title == "Decline"){// decline multi invite
-		chrome.runtime.sendMessage({"msg":"declineInvite", "data":elem.parentElement.dataset.name})
-		elem.parentElement.remove()
-	}else if(elem.title.startsWith("Toggle")){ // all three toggle buttons
-		elem.classList.add("loading");
-		chrome.runtime.sendMessage({"msg":"toggleStreamFlag","data":elem.id})
-	}else if(elem.id == "private" || elem.id == "recordings"){
+	if(elem.classList.contains("dismiss")){
+		if(elem.parentElement.classList.contains("host")){
+			browser.runtime.sendMessage({"msg":"leaveMulti", "data":elem.parentElement.dataset.id})
+		}else if(elem.parentElement.classList.contains("guest")){
+			browser.runtime.sendMessage({"msg":"kickStreamer", "data":elem.parentElement.dataset.id})
+		}else if(elem.parentElement.classList.contains("outgoing")){
+			browser.runtime.sendMessage({"msg":"revokeInvite", "data":elem.parentElement.dataset.id})
+		}else if(elem.parentElement.classList.contains("invite")){
+			browser.runtime.sendMessage({"msg":"declineInvite", "data":elem.parentElement.dataset.id})
+		}else if(elem.id = "closemodal"){
+			closeModal()
+		}
+	}else if(elem.classList.contains("accept")){
+		browser.runtime.sendMessage({"msg":"acceptInvite", "data":elem.parentElement.dataset.id})
+	}else if(elem.parentElement.id == "premiumflags"){
 		elem.classList.add("loading")
-		chrome.runtime.sendMessage({"msg":"togglePremiumFlag","data":elem.id})
-	}else if(elem.title == "Dismiss"){ // delete error message
-		chrome.runtime.sendMessage({"msg":"deleteMessage", "data":elem.dataset.id})
-		elem.parentElement.remove()
-	}else if(elem.title == "Leave Session"){ // leave multistream
-		chrome.runtime.sendMessage({"msg":"leaveStream", "data":elem.parentElement.dataset.name})
-		elem.parentElement.remove()
-	}else if(elem.title == "Revoke Invite"){ // remove invite
-		chrome.runtime.sendMessage({"msg":"revokeInvite", "data":elem.parentElement.dataset.name})
-		elem.parentElement.remove()
-	}else if(elem.title == "Remove from Session"){ // kick from stream you're hosting
-		chrome.runtime.sendMessage({"msg":"kickStreamer", "data":elem.parentElement.dataset.name})
-		elem.parentElement.remove()
-	}else if(elem.id == "invite"){
-		modalElem.style.opacity = "1"
-		delete modalElem.style.removeProperty("pointer-events")
-		modalElems["invitemodal"].style.display = ""
-	}else if(elem.id == "seerecordings"){
-		modalElem.style.opacity = "1"
-		delete modalElem.style.removeProperty("pointer-events")
-		modalElems["recordingsmodal"].style.display = ""
+		browser.runtime.sendMessage({"msg":"togglePremiumFlag","data":elem.id})
+	}else if(elem.parentElement.id == "streamflags"){
+		elem.classList.add("loading");
+		browser.runtime.sendMessage({"msg":"toggleStreamFlag","data":elem.id})
+	}else if(elem == inviteButtonElem){
+		openModal("invitemodal")
+	}else if(elem == recordingElem){
+		openModal("recordingsmodal")
 		document.body.style.minHeight = 150 // ensure we can see all of it
 	}else if(elem == inviteButton){
 		sendNamedInvite(inviteeElem.value)
 		inviteeElem.value = ""
-	}else if(elem == modalElem || elem.id == "closemodal"){
-		modalElem.style.opacity = "0"
-		modalElem.style.pointerEvents = "none"
-		for(let a in modalElems){
-			modalElems[a].style.display = "none"
-		}
+	}else if(elem == modalElem){
+		closeModal()
 	}else if(elem.id == "markrecordsread"){
-		for(let a=recordingsElem.children.length-1; a >= 0; a--){
-			let note = recordingsElem.children[a]
+		let records = recordingsElem.children
+		for(let a=records.length-1; a >= 0; a--){
+			let note = records[a]
 			if(!note.classList.contains("read")){
-				chrome.runtime.sendMessage({"msg":"markRecordingRead", "data":note.dataset.id})
+				browser.runtime.sendMessage({"msg":"markRecordingRead", "data":note.dataset.id})
 			}
 			note.classList.add("read")
 			note.lastChild.classList.add("hidden")
@@ -222,19 +228,18 @@ function clickInStreamsElem(elem, parent){
 		sendNamedInvite(parent.dataset.id)
 		// TODO pending status?
 	}else if(elem.classList.contains("markRead")){
-		chrome.runtime.sendMessage({"msg":"markStreamRead", "data":parent.dataset.id})
+		browser.runtime.sendMessage({"msg":"markStreamRead", "data":parent.dataset.id})
 		parent.classList.add("read");
 		elem.classList.add("hidden")
 	}else{
 		// this auto-closes the popup so I don't need to mark it as read here - it will update on next open
-		chrome.runtime.sendMessage({"msg":"viewStream", "data":parent.dataset.id})
+		browser.runtime.sendMessage({"msg":"viewStream", "data":parent.dataset.id})
 	}
-	
 }
 
 function clickInRecordingsElem(elem, parent){
 	if(elem.title == "Mark as Read"){
-		chrome.runtime.sendMessage({"msg":"markRecordingRead", "data":parent.dataset.id})
+		browser.runtime.sendMessage({"msg":"markRecordingRead", "data":parent.dataset.id})
 		if(!parent.classList.contains("read") && recordingElem.dataset.count){
 			let val = recordingElem.dataset.count - 1
 			if(val > 0){
@@ -247,26 +252,23 @@ function clickInRecordingsElem(elem, parent){
 		elem.classList.add("hidden")
 	}else{
 		// this auto-closes the popup so I don't need to mark it as read here - it will update on next open
-		chrome.runtime.sendMessage({"msg":"viewRecording", "data":parent.dataset.id})
+		browser.runtime.sendMessage({"msg":"viewRecording", "data":parent.dataset.id})
 	}
-	
 }
 
 function sendNamedInvite(name){
-	chrome.runtime.sendMessage({"msg":"inviteNameToMulti", "data":name})
+	browser.runtime.sendMessage({"msg":"inviteNameToMulti", "data":name})
 }
 
 // because I want error messages to show immediately
-chrome.runtime.onMessage.addListener((request, sender, sendResponse)=>{
+browser.runtime.onMessage.addListener((request, sender, sendResponse)=>{
 	switch (request["msg"]) {
 		case "addMessage":
 			let elem = document.getElementById(request["data"][0])
 			if(elem){
 				elem.dataset.count = request["data"][1]
 			}else{
-				console.log(request["data"])
-				let html = createMsgHTML(...request["data"])
-				msgBoxElem.innerHTML += html
+				addMsgHTML(request["data"][0])
 			}
 			break;
 		case "setPremiumFlag":
@@ -343,6 +345,12 @@ window.onload = ()=>{
 			clickInStreamsElem(e.target, parents[parents.indexOf(streamsElem)-1])
 		}else if(parents.includes(recordingsElem)){
 			clickInRecordingsElem(e.target, parents[parents.indexOf(recordingsElem)-1])
+		}else if(parents.includes(msgBoxElem)){
+			let elem = e.target
+			if(elem.classList.contains("dismiss")){
+				browser.runtime.sendMessage({"msg":"deleteMessage", "data":elem.parentElement.dataset.id})
+				elem.parentElement.remove()
+			}
 		}else{
 			onClick(e.target)
 		}

@@ -240,11 +240,8 @@ button:disabled{
 .invitebutton::before{
 	content: '\e87b';
 }
-#trashbutton::before{
-	content: '\e83b';
-}
 .markRead::before{
-	content: '\e816';
+	content: '\e825';
 }
 .dismiss::before{
 	content: '\e813';
