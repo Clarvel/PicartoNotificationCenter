@@ -1,0 +1,6 @@
+{
+    "welcome": "Welcome to Clarvel's Unofficial Picarto Notification Center!",
+    "disclaimer": "This extension requires API access to your Picarto account to manage and deliver notifications",
+    "postScript": "PS - Don't forget to pin the extension icon!",
+    "loginButton": "Login and Request Access"
+}

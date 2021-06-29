@@ -1,0 +1,18 @@
+{
+	"popupHeaderSingle":"{0} Person Streaming",
+	"popupHeaderMultiple":"{0} People Streaming",
+	"inviteHeader":"Send MultiStream Invite to:",
+	"recordingsHeader":"Recordings",
+	"inviteStreamerTooltip":"Invite Streamer",
+	"privateTooltip":"Toggle Private Mode",
+	"recordingsTooltip":"Toggle Stream Recording",
+	"gamingTooltip":"Toggle Gamemode",
+	"adultTooltip":"Toggle NSFW",
+	"commissionTooltip":"Toggle Commissions",
+	"seerecordingsTooltip":"View Recordings",
+	"settingsTooltip":"Options",
+	"sendinviteTooltip":"Send Invite",
+	"markreadTooltip":"Mark Read",
+	"markrecordsreadTooltip":"Mark all as Read",
+	"closemodalbuttonTooltip":"Close"
+}

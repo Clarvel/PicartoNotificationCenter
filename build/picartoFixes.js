@@ -1,3 +1,4 @@
+/* // hide picarto bar
 if(chrome){browser = chrome}
 
 function injectCSS(style) {
@@ -7,7 +8,7 @@ function injectCSS(style) {
 }
 
 // get setting from storage
-browser.storage.local.get("picartobar", (item) => {
+browser.storage.sync.get("picartobar", (item) => {
 	// hide Picarto official notification bar via css injection
 	// if picartobar is undefined, default to true
 	// TODO requires reload of page if setting changed
@@ -17,3 +18,34 @@ browser.storage.local.get("picartobar", (item) => {
 		injectCSS("#notificationMenu{display: none !important;}");
 	}
 });
+*/
+
+/* // remove warning page
+chrome.webRequest.onBeforeRequest.addListener(
+  function(details) {
+  
+    url = new URL(details.url)
+
+    return {
+      redirectUrl:
+        url.searchParams.get("go")
+    };
+  },
+  {
+    urls: [
+      "*://picarto.tv/site/referrer*",
+    ],
+    types: [
+      "main_frame",
+      "sub_frame",
+      "stylesheet",
+      "script",
+      "image",
+      "object",
+      "xmlhttprequest",
+      "other"
+    ]
+  },
+  ["blocking"]
+);
+*/

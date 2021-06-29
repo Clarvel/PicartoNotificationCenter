@@ -2,6 +2,13 @@ body {
 	transition: all ease .3s;
 }
 .disabled{
+	display: none; /*remove to make disabled options visible*/
 	opacity: 0.5;
 	pointer-events: none;
+}
+.padBottom{
+	margin-bottom: 1em;
+}
+.padTop{
+	margin-top: 1em;
 }

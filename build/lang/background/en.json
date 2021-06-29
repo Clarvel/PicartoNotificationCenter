@@ -1,0 +1,12 @@
+{
+	"badgeStreamingSingle":"{0} person streaming",
+	"badgeStreamingPlural":"{0} people streaming",
+	"badgeInvitesSingle":"{0} invite",
+	"badgeInvitesPlural":"{0} invites",
+	"badgeLogin":"Login",
+	"badgeLoginTip":"Login to Picarto",
+	
+	"streamingNotification":"is Streaming",
+	"followedNotification":"followed you!",
+	"multiInviteNotification":"invited you to Multistream!"
+}

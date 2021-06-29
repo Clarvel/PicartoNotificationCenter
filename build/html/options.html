@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>Picarto Notifier Options</title>
+		<script type="module" src="../js/options.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/options.css">
+	</head>
+	<body>
+		<div class="padBottom">
+			<button id="logoutButton">Logout</button>
+			<span id="usernameElement"></span>
+		</div>
+		<div id="optionsContainer"></div>
+		<div class="padTop">
+			<button id="saveButton">Save</button>
+			<span id="saveStatus"></span><br>
+		</div>
+		<div>
+			<button id="resetButton">Reset</button>
+			<span id="resetStatus"></span><br>
+		</div>
+	</body>
+	<template id="selectTemplate">
+		<div><span></span><select></select>
+	</template>
+	<template id="rangeTemplate">
+		<div><input type="range"><span></span></div>
+	</template>
+	<template id="boolTemplate">
+		<div><input type="checkbox"><span></span></div>
+	</template>
+</html>

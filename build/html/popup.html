@@ -1,0 +1,77 @@
+<html>
+	<head>
+		<title>Picarto Notifier Popup Window</title>
+		<link rel="stylesheet" type="text/css" href="../css/picartofont.css">
+		<script type="module" src="../js/popup.js"></script>
+		<link rel="stylesheet" type="text/css" href="../css/popup.css">
+	</head>
+	<body>
+		<div class="header row">
+			<div id="popupHeader"></div>
+		</div>
+		<div id="streamsList" class="separator-top"></div>
+		<div id="dashboard" class="row separator-top">
+			<span class="icon" id="settingsButton"></span>
+			<span class="icon hidden" id="viewRecordingsButton"></span>
+			<div id="streamerFlags" class="hidden">
+				<div class="separator-left">
+					<span class="icon" id="gamingToggle"></span>
+					<span class="icon" id="adultToggle"></span>
+					<span class="icon" id="commissionToggle"></span>
+				</div>
+				<div id="premiumFlags" class="hidden separator-left">
+					<span class="icon invitebutton" id="inviteStreamerButton"></span>
+					<span class="icon" id="privateToggle"></span>
+					<span class="icon" id="recordingsToggle"></span>
+				</div>
+			</div>
+		</div>
+		<div id="multistreamList" class="separator-top"></div>
+		<div id="messagesList" class="separator-top"></div>
+
+		<div class="modal removed" id="modal">
+			<div id="inviteModal" class="removed">
+				<div class="header" id="inviteModalHeader"></div>
+				<div class="flexbar separator-top">
+					<input type="text" id="inviteModalInput">
+					<span class="icon invitebutton" id="inviteModalInvitebutton"></span>
+				</div>
+			</div>
+			<div id="recordingsModal" class="removed">
+				<div class="header" id="recordingsModalHeader"></div>
+				<div id="recordingsModalList" class="separator-top"></div>
+				<span class="icon markread" id="markAllRecordingsRead"></span>
+			</div>
+			<span class="icon dismiss" id="closeModalButton"></span>
+		</div>
+	</body>
+	<template id="streamingTemplate">
+		<div class="notification row livestream">
+			<img class="avatar">
+			<span class="message"></span>
+			<span class="icon invitebutton"></span>
+			<span class="icon markread"></span>
+		</div>
+	</template>
+	<template id="recordingTemplate">
+		<div class="notification row livestream">
+			<img class="avatar">
+			<span class="message"></span>
+			<span class="icon markread"></span>
+		</div>
+	</template>
+	<template id="multiTemplate">
+		<div class="notification row">
+			<img class="avatar">
+			<span class="message"></span>
+			<span class="icon accept"></span>
+			<span class="icon dismiss"></span>
+		</div>
+	</template>
+	<template id="messageTemplate">
+		<div class="notification row">
+			<span class="message"></span>
+			<span class="icon dismiss"></span>
+		</div>
+	</template>
+</html>
